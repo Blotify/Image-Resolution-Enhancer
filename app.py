@@ -6,6 +6,11 @@ from cv2 import dnn_superres
 
 MODEL_PATH = "FSRCNN_x2.pb"
 
+st.sidebar.header("Image Controls")
+brightness = st.sidebar.slider("Brightness", 0.5, 3.0, 1.0)
+contrast = st.sidebar.slider("Contrast", 0.5, 3.0, 1.0)
+sharpness = st.sidebar.slider("Sharpness", 0.5, 3.0, 1.0)
+
 st.title("Image Upscaler using Super Resolution")
 
 uploaded = st.file_uploader(
@@ -19,7 +24,6 @@ if uploaded:
 
     st.image(pil_image, caption="Input Image", use_column_width=True)
 
-    # Load model and upscale
     sr = dnn_superres.DnnSuperResImpl_create()
     sr.readModel(MODEL_PATH)
     sr.setModel("fsrcnn", 2)
