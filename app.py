@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageEnhance
 from cv2 import dnn_superres
 
 MODEL_PATH = "FSRCNN_x2.pb"
@@ -30,6 +30,10 @@ if uploaded:
 
     upscaled_cv = sr.upsample(cv_image)
     result = Image.fromarray(cv2.cvtColor(upscaled_cv, cv2.COLOR_BGR2RGB))
+
+    # Apply brightness and contrast enhancements
+    result = ImageEnhance.Brightness(result).enhance(brightness)
+    result = ImageEnhance.Contrast(result).enhance(contrast)
 
     st.image(result, caption="Enhanced Image", use_column_width=True)
 else:
