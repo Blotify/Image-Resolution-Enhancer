@@ -10,6 +10,7 @@ st.sidebar.header("Image Controls")
 brightness = st.sidebar.slider("Brightness", 0.5, 3.0, 1.0)
 contrast = st.sidebar.slider("Contrast", 0.5, 3.0, 1.0)
 sharpness = st.sidebar.slider("Sharpness", 0.5, 3.0, 1.0)
+saturation = st.sidebar.slider("Saturation", 0.5, 3.0, 1.0)
 
 st.title("Image Upscaler using Super Resolution")
 
@@ -31,9 +32,11 @@ if uploaded:
     upscaled_cv = sr.upsample(cv_image)
     result = Image.fromarray(cv2.cvtColor(upscaled_cv, cv2.COLOR_BGR2RGB))
 
-    # Apply brightness and contrast enhancements
+    # Apply enhancements
     result = ImageEnhance.Brightness(result).enhance(brightness)
     result = ImageEnhance.Contrast(result).enhance(contrast)
+    result = ImageEnhance.Sharpness(result).enhance(sharpness)
+    result = ImageEnhance.Color(result).enhance(saturation)
 
     st.image(result, caption="Enhanced Image", use_column_width=True)
 else:
