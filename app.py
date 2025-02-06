@@ -11,6 +11,7 @@ brightness = st.sidebar.slider("Brightness", 0.5, 3.0, 1.0)
 contrast = st.sidebar.slider("Contrast", 0.5, 3.0, 1.0)
 sharpness = st.sidebar.slider("Sharpness", 0.5, 3.0, 1.0)
 saturation = st.sidebar.slider("Saturation", 0.5, 3.0, 1.0)
+hue = st.sidebar.slider("Hue", -0.5, 0.5, 0.0)
 
 st.title("Image Upscaler using Super Resolution")
 
@@ -37,6 +38,12 @@ if uploaded:
     result = ImageEnhance.Contrast(result).enhance(contrast)
     result = ImageEnhance.Sharpness(result).enhance(sharpness)
     result = ImageEnhance.Color(result).enhance(saturation)
+
+    # Hue Shift
+    if hue:
+        hsv = np.array(result.convert("HSV"))
+        hsv[..., 0] = (hsv[..., 0].astype(int) + int(hue * 255)) % 255
+        result = Image.fromarray(hsv, mode="HSV").convert("RGB")
 
     st.image(result, caption="Enhanced Image", use_column_width=True)
 else:
