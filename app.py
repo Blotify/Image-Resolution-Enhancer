@@ -6,6 +6,36 @@ from cv2 import dnn_superres
 
 MODEL_PATH = "FSRCNN_x2.pb"
 
+# Inject custom CSS
+st.markdown(
+    """
+    <style>
+    .main{
+        background:linear-gradient(135deg,#1b1b1b,#404040);
+        color:white;
+    }
+
+    h1{
+        text-align:center;
+        color:#ff6666;
+        font-weight:700;
+    }
+
+    .stButton>button{
+        background:#4CAF50;
+        color:white;
+        border-radius:8px;
+        font-size:16px;
+    }
+
+    .stImage{
+        border-radius:12px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.sidebar.header("Image Controls")
 brightness = st.sidebar.slider("Brightness", 0.5, 3.0, 1.0)
 contrast = st.sidebar.slider("Contrast", 0.5, 3.0, 1.0)
