@@ -6,6 +6,30 @@ from cv2 import dnn_superres
 
 MODEL_PATH = "FSRCNN_x2.pb"
 
+
+def load_super_resolution(scale=2):
+    sr = dnn_superres.DnnSuperResImpl_create()
+    sr.readModel(MODEL_PATH)
+    sr.setModel("fsrcnn", scale)
+    return sr
+
+
+def upscale(image, sr):
+    return sr.upsample(image)
+
+
+def apply_enhancements(image, brightness, contrast, sharpness, saturation, hue):
+    image = ImageEnhance.Brightness(image).enhance(brightness)
+    image = ImageEnhance.Contrast(image).enhance(contrast)
+    image = ImageEnhance.Sharpness(image).enhance(sharpness)
+    image = ImageEnhance.Color(image).enhance(saturation)
+    if hue:
+        hsv = np.array(image.convert("HSV"))
+        hsv[..., 0] = (hsv[..., 0].astype(int) + int(hue * 255)) % 255
+        image = Image.fromarray(hsv, mode="HSV").convert("RGB")
+    return image
+
+
 # Inject custom CSS
 st.markdown(
     """
@@ -56,24 +80,13 @@ if uploaded:
 
     st.image(pil_image, caption="Input Image", use_column_width=True)
 
-    sr = dnn_superres.DnnSuperResImpl_create()
-    sr.readModel(MODEL_PATH)
-    sr.setModel("fsrcnn", 2)
-
-    upscaled_cv = sr.upsample(cv_image)
+    sr = load_super_resolution()
+    upscaled_cv = upscale(cv_image, sr)
     result = Image.fromarray(cv2.cvtColor(upscaled_cv, cv2.COLOR_BGR2RGB))
 
-    # Apply enhancements
-    result = ImageEnhance.Brightness(result).enhance(brightness)
-    result = ImageEnhance.Contrast(result).enhance(contrast)
-    result = ImageEnhance.Sharpness(result).enhance(sharpness)
-    result = ImageEnhance.Color(result).enhance(saturation)
-
-    # Hue Shift
-    if hue:
-        hsv = np.array(result.convert("HSV"))
-        hsv[..., 0] = (hsv[..., 0].astype(int) + int(hue * 255)) % 255
-        result = Image.fromarray(hsv, mode="HSV").convert("RGB")
+    result = apply_enhancements(
+        result, brightness, contrast, sharpness, saturation, hue
+    )
 
     st.image(result, caption="Enhanced Image", use_column_width=True)
 else:
