@@ -78,7 +78,8 @@ if uploaded:
     pil_image = Image.open(uploaded)
     cv_image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
 
-    st.image(pil_image, caption="Input Image", use_column_width=True)
+    st.image(pil_image, caption=f"Input Image ({uploaded.name})", use_column_width=True)
+    st.write(f"**Resolution:** {pil_image.width} × {pil_image.height}")
 
     sr = load_super_resolution()
     upscaled_cv = upscale(cv_image, sr)
@@ -88,6 +89,18 @@ if uploaded:
         result, brightness, contrast, sharpness, saturation, hue
     )
 
+    st.subheader("Output")
     st.image(result, caption="Enhanced Image", use_column_width=True)
+    st.write(f"**Resolution:** {result.width} × {result.height}")
+
+    # Save temporarily to offer download
+    result.save("output.png")
+    with open("output.png", "rb") as file:
+        st.download_button(
+            label="Download Image",
+            data=file,
+            file_name="enhanced_output.png",
+            mime="image/png"
+        )
 else:
     st.info("Upload an image to begin.")
